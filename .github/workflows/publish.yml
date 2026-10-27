@@ -1,0 +1,45 @@
+name: Build and publish Tbilisi page
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  publish:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Python dependencies
+        run: python -m pip install Pillow==11.3.0 requests==2.32.5 beautifulsoup4==4.14.2
+      - name: Check ffmpeg
+        run: ffmpeg -version | head -1
+      - name: Download media and build video + website
+        run: python build.py
+      - name: Save the generated video as a downloadable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tbilisi-video-84s
+          path: dist/assets/tbilisi-in-84-seconds.mp4
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4
