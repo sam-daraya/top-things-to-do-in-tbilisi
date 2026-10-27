@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download openly licensed Wikimedia photos, package site, render 84s video.
+"""Build Tbilisi travel article with credited Pexels and Wikimedia photos and 84s video.
 Run automatically by GitHub Actions on user's repository. Requires internet.
 """
 import io, json, os, re, subprocess, sys, time
@@ -14,7 +14,7 @@ ROOT=Path(__file__).resolve().parent
 DIST=ROOT/'dist'; ASSETS=DIST/'assets'
 ASSETS.mkdir(parents=True,exist_ok=True)
 MEDIA=json.loads((ROOT/'MEDIA_MANIFEST.json').read_text(encoding='utf-8'))
-UA='TbilisiTravelGuide/1.1 (https://github.com/sam-daraya/top-things-to-do-in-tbilisi) python-requests/2.32'
+UA='TbilisiTravelGuide/1.2 (https://github.com/sam-daraya/top-things-to-do-in-tbilisi) python-requests/2.32'
 SESSION=requests.Session();SESSION.headers.update({'User-Agent':UA,'Accept':'application/json, image/*;q=0.9, */*;q=0.1'})
 
 def request(url,params=None,binary=False):
@@ -58,20 +58,40 @@ def slug(index,title):
 assets={}
 for row in MEDIA:
  filename=row['filename'];name=slug(row['index'],row['title'])
- info=api_info(filename)
- md=info.get('extmetadata',{})
- license=unescape(md.get('LicenseShortName',{}).get('value','')).upper()
- if not any(term in license for term in ('CC BY','CC0','PUBLIC DOMAIN','PD-')):
-  raise RuntimeError(f'No approved reusable license for {filename}: {license}')
- # cross-check manually verified attribution info supplied in manifest
- print(f"Image {row['index']}: {filename} ({license})",flush=True)
- url=info.get('thumburl') or info['url']
- imgdata=request(url,binary=True).content
- im=Image.open(io.BytesIO(imgdata));im=ImageOps.exif_transpose(im).convert('RGB')
- im.thumbnail((1600,1300),Image.Resampling.LANCZOS)
- im.save(ASSETS/name,'WEBP',quality=84,method=6)
+ provider=row.get('provider','wikimedia')
+ if provider == 'pexels':
+  if row.get('license') != 'Pexels License' or not row.get('source','').startswith('https://www.pexels.com/photo/'):
+   raise RuntimeError('Missing Pexels image license/source in manifest: '+filename)
+  urls=[(row['img'],'Pexels editorial image'),(row['fallback_img'],'Wikimedia licensed fallback')]
+ else:
+  license=row.get('license','').upper()
+  if not any(x in license for x in ('CC BY','CC0','PUBLIC DOMAIN','PD-')):
+   raise RuntimeError('Unapproved Wikimedia license: '+filename)
+  # Existing Wikimedia URL is a verified page image; a full-resolution file URL is preferred.
+  imgurl=row['img']
+  if '/commons/thumb/' in imgurl:
+   prefix,namepart=imgurl.split('/commons/thumb/',1)
+   imgurl=prefix+'/commons/'+namepart.rsplit('/',1)[0]
+  urls=[(imgurl,'Wikimedia original image'),(row['img'],'Wikimedia preview fallback')]
+ print(f"Image {row['index']}: {row['title']} — {provider}",flush=True)
+ photo=None
+ for url,label in urls:
+  try:
+   imgdata=request(url,binary=True).content
+   if len(imgdata)<15000:raise RuntimeError(f'Image payload too small: {len(imgdata)} bytes')
+   test=Image.open(io.BytesIO(imgdata));test.load()
+   if min(test.size)<650:raise RuntimeError(f'Insufficient native resolution {test.size}')
+   photo=ImageOps.exif_transpose(test).convert('RGB')
+   print('  fetched',label,photo.size,flush=True)
+   break
+  except (requests.RequestException, RuntimeError, OSError, ValueError) as e:
+   print('  source unavailable:',str(e)[:180],flush=True)
+ if photo is None:raise RuntimeError('No usable licensed image for '+filename)
+ # 2x-optimized images rather than the former 960px Wikimedia previews.
+ photo.thumbnail((2500,2200),Image.Resampling.LANCZOS)
+ photo.save(ASSETS/name,'WEBP',quality=90,method=6)
  assets[filename]=name
-print('Saved',len(assets),'WebP files')
+print('Saved',len(assets),'WebP files',flush=True)
 
 soup=BeautifulSoup((ROOT/'index.html').read_text(encoding='utf-8'),'html.parser')
 for im in soup.select('img[data-original-file]'):
@@ -91,7 +111,7 @@ photo=Image.open(ASSETS/assets['Old_Tbilisi_Panorama_09.23_(2).jpg'])
 posterim=ImageOps.fit(photo,(1280,720),method=Image.Resampling.LANCZOS)
 posterim.save(poster,'WEBP',quality=85)
 # Build film via FFmpeg, from real still photos (not original motion footage)
-shot_ids=[1,2,3,5,8,10,12,4]
+shot_ids=[1,2,3,6,7,10,11,13]
 clips=[]
 for j,i in enumerate(shot_ids):
  row=next(x for x in MEDIA if x['index']==i)
@@ -108,7 +128,7 @@ for j,i in enumerate(shot_ids):
  print('Rendering scene',j+1,'of',len(shot_ids),flush=True)
  subprocess.run(cmd,check=True)
  clips.append(outpath)
- listfile=ASSETS/'_concat.txt'
+listfile=ASSETS/'_concat.txt'
 listfile.write_text(''.join("file '%s'\n" % x.name for x in clips))
 silent=ASSETS/'_silent.mp4'
 subprocess.run(['ffmpeg','-nostdin','-y','-loglevel','error','-f','concat','-safe','0','-i',str(listfile),
@@ -140,8 +160,8 @@ for script in soup.find_all('script',attrs={'type':'application/ld+json'}):
    data['image']=site+'assets/tbilisi-poster.webp'
    script.string=json.dumps(data,ensure_ascii=False)
  except:pass
-video_info={'@context':'https://schema.org','@type':'VideoObject','name':'Tbilisi in 84 Seconds',
-'description':'An 84-second photo-based visual guide to Tbilisi sights and experiences.',
+video_info={'@context':'https://schema.org','@type':'VideoObject','name':'A Short Video Guide to Tbilisi',
+'description':'An 84-second photography-led film showing the attractions and atmosphere of Tbilisi, Georgia.',
 'uploadDate':'2026-10-27','duration':'PT1M24S',
 'contentUrl':site+'assets/tbilisi-in-84-seconds.mp4','thumbnailUrl':site+'assets/tbilisi-poster.webp'}
 js=soup.new_tag('script',attrs={'type':'application/ld+json'});js.string=json.dumps(video_info)
