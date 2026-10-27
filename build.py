@@ -79,7 +79,7 @@ for im in soup.select('img[data-original-file]'):
  if filename not in assets:raise RuntimeError(f'HTML image not found in manifest: {filename}')
  im['src']='assets/'+assets[filename]
  im['loading']='lazy'
- im.pop('referrerpolicy',None)
+ im.attrs.pop('referrerpolicy',None)
 # fullwidth banner
 pan=soup.select_one('.panorama-feature-image')
 if pan:
