@@ -84,7 +84,7 @@ for im in soup.select('img[data-original-file]'):
 pan=soup.select_one('.panorama-feature-image')
 if pan:
  pan['src']='assets/'+assets['Tbilisi_Sunset_Panorama.jpg']
- pan.pop('referrerpolicy',None)
+ pan.attrs.pop('referrerpolicy',None)
 # Create poster from Old Town still
 poster=ASSETS/'tbilisi-poster.webp'
 photo=Image.open(ASSETS/assets['Old_Tbilisi_Panorama_09.23_(2).jpg'])
@@ -109,15 +109,15 @@ for j,i in enumerate(shot_ids):
  subprocess.run(cmd,check=True)
  clips.append(outpath)
  listfile=ASSETS/'_concat.txt'
- listfile.write_text(''.join("file '%s'\n" % x.name for x in clips))
- silent=ASSETS/'_silent.mp4'
- subprocess.run(['ffmpeg','-nostdin','-y','-loglevel','error','-f','concat','-safe','0','-i',str(listfile),
-   '-c','copy',str(silent)],cwd=ASSETS,check=True)
- final=ASSETS/'tbilisi-in-84-seconds.mp4'
- subprocess.run(['ffmpeg','-nostdin','-y','-loglevel','error','-i',str(silent),
-   '-i',str(ROOT/'assets/tbilisi-original-theme.m4a'),'-map','0:v:0','-map','1:a:0',
-   '-c:v','copy','-c:a','aac','-b:a','128k','-shortest','-movflags','+faststart',str(final)],check=True)
- for path in clips+[listfile,silent]:path.unlink()
+listfile.write_text(''.join("file '%s'\n" % x.name for x in clips))
+silent=ASSETS/'_silent.mp4'
+subprocess.run(['ffmpeg','-nostdin','-y','-loglevel','error','-f','concat','-safe','0','-i',str(listfile),
+  '-c','copy',str(silent)],cwd=ASSETS,check=True)
+final=ASSETS/'tbilisi-in-84-seconds.mp4'
+subprocess.run(['ffmpeg','-nostdin','-y','-loglevel','error','-i',str(silent),
+  '-i',str(ROOT/'assets/tbilisi-original-theme.m4a'),'-map','0:v:0','-map','1:a:0',
+  '-c:v','copy','-c:a','aac','-b:a','128k','-shortest','-movflags','+faststart',str(final)],check=True)
+for path in clips+[listfile,silent]:path.unlink()
 print('Rendered',final,final.stat().st_size,'bytes',flush=True)
 
 # meta/canonical actual public GitHub URL
