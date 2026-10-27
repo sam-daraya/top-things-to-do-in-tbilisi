@@ -14,7 +14,7 @@ ROOT=Path(__file__).resolve().parent
 DIST=ROOT/'dist'; ASSETS=DIST/'assets'
 ASSETS.mkdir(parents=True,exist_ok=True)
 MEDIA=json.loads((ROOT/'MEDIA_MANIFEST.json').read_text(encoding='utf-8'))
-UA='TbilisiTravelAssignment/1.0 (public-portfolio build via GitHub Pages; media licensed via Wikimedia Commons)'
+UA='TbilisiTravelGuide/1.1 (https://github.com/sam-daraya/top-things-to-do-in-tbilisi) python-requests/2.32'
 SESSION=requests.Session();SESSION.headers.update({'User-Agent':UA,'Accept':'application/json, image/*;q=0.9, */*;q=0.1'})
 
 def request(url,params=None,binary=False):
@@ -31,13 +31,25 @@ def request(url,params=None,binary=False):
  raise RuntimeError('Wikimedia did not respond after 5 attempts')
 
 def api_info(filename):
- title='File:'+filename.replace('_',' ')
- data=request('https://commons.wikimedia.org/w/api.php',params={
-  'action':'query','format':'json','prop':'imageinfo','iiprop':'url|extmetadata',
-  'iiurlwidth':1600,'titles':title}).json()
- pages=list(data['query']['pages'].values())
- if not pages or 'missing' in pages[0]:raise ValueError('Missing Wikimedia file '+filename)
- return pages[0]['imageinfo'][0]
+ """Use file URLs and CC licenses recorded in MEDIA_MANIFEST.json.
+
+ The live Wikimedia Commons API was returning repeated errors from CI.
+ This does not bypass Wikimedia's image CDN; image downloads can still fail
+ during a Wikimedia outage, and their original license pages remain in the
+ project's MEDIA_CREDITS.md and MEDIA_MANIFEST.json.
+ """
+ import hashlib
+ row = next((entry for entry in MEDIA if entry['filename'] == filename), None)
+ if row is None:
+  raise ValueError('Missing image from MEDIA_MANIFEST.json: ' + filename)
+ url = row.get('img')
+ if not url:
+  hashpart = hashlib.md5(filename.encode('utf-8')).hexdigest()
+  safe_name = quote(filename.replace(' ', '_'), safe=',()')
+  url = (f'https://upload.wikimedia.org/wikipedia/commons/thumb/'
+         f'{hashpart[0]}/{hashpart[:2]}/{safe_name}/960px-{safe_name}')
+ return {'thumburl': url,
+         'extmetadata': {'LicenseShortName': {'value': row['license']}}}
 
 def slug(index,title):
  s=re.sub(r'[^a-z0-9]+','-',title.lower()).strip('-')[:65]
