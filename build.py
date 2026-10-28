@@ -13,6 +13,12 @@ ImageFile.LOAD_TRUNCATED_IMAGES=True
 ROOT=Path(__file__).resolve().parent
 DIST=ROOT/'dist'; ASSETS=DIST/'assets'
 ASSETS.mkdir(parents=True,exist_ok=True)
+# Publish the local brand asset alongside generated WebP photos.
+logo_src=ROOT/'assets'/'firebird-logo.png'
+if not logo_src.is_file():
+ raise FileNotFoundError('Missing brand logo: assets/firebird-logo.png')
+import shutil
+shutil.copy2(logo_src, ASSETS/'firebird-logo.png')
 MEDIA=json.loads((ROOT/'MEDIA_MANIFEST.json').read_text(encoding='utf-8'))
 UA='TbilisiTravelGuide/1.2 (https://github.com/sam-daraya/top-things-to-do-in-tbilisi) python-requests/2.32'
 SESSION=requests.Session();SESSION.headers.update({'User-Agent':UA,'Accept':'application/json, image/*;q=0.9, */*;q=0.1'})
