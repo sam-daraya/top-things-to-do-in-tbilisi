@@ -161,9 +161,10 @@ for script in soup.find_all('script',attrs={'type':'application/ld+json'}):
    script.string=json.dumps(data,ensure_ascii=False)
  except:pass
 video_info={'@context':'https://schema.org','@type':'VideoObject','name':'A Short Video Guide to Tbilisi',
-'description':'An 84-second photography-led film showing the attractions and atmosphere of Tbilisi, Georgia.',
-'uploadDate':'2026-10-27','duration':'PT1M24S',
-'contentUrl':site+'assets/tbilisi-in-84-seconds.mp4','thumbnailUrl':site+'assets/tbilisi-poster.webp'}
+'description':'A short travel video featuring the sights and atmosphere of Tbilisi, Georgia.',
+'embedUrl':'https://www.youtube.com/embed/_nXz75uuLbI',
+'url':'https://www.youtube.com/watch?v=_nXz75uuLbI',
+ 'thumbnailUrl':'https://i.ytimg.com/vi/_nXz75uuLbI/hqdefault.jpg'}
 js=soup.new_tag('script',attrs={'type':'application/ld+json'});js.string=json.dumps(video_info)
 soup.head.append(js)
 (DIST/'index.html').write_text('<!DOCTYPE html>\n'+str(soup.html)+'\n','utf-8')
