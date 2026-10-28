@@ -149,6 +149,19 @@ soup.head.append(meta)
 for prop,content in [('og:url',site),('og:image',site+'assets/tbilisi-poster.webp')]:
  tag=soup.new_tag('meta',attrs={'property':prop,'content':content})
  soup.head.append(tag)
+# Twitter/X sharing tags; use the same title, description and image as Open Graph.
+title_text=soup.title.get_text(strip=True) if soup.title else 'Top Things to Do in Tbilisi'
+description_tag=soup.head.find('meta',attrs={'name':'description'})
+description_text=description_tag.get('content','') if description_tag else ''
+for key,value in (
+ ('twitter:card','summary_large_image'),
+ ('twitter:title',title_text),
+ ('twitter:description',description_text),
+ ('twitter:image',site+'assets/tbilisi-poster.webp'),
+):
+ tag=soup.new_tag('meta',attrs={'name':key,'content':value})
+ soup.head.append(tag)
+
 for script in soup.find_all('script',attrs={'type':'application/ld+json'}):
  try:
   data=json.loads(script.string)
@@ -156,15 +169,26 @@ for script in soup.find_all('script',attrs={'type':'application/ld+json'}):
    data['url']=site
    data['mainEntityOfPage']={'@type':'WebPage','@id':site}
    data['datePublished']='2026-10-27'
-   data['dateModified']='2026-10-27'
+   data['dateModified']='2026-10-28'
    data['image']=site+'assets/tbilisi-poster.webp'
    script.string=json.dumps(data,ensure_ascii=False)
  except:pass
 video_info={'@context':'https://schema.org','@type':'VideoObject','name':'A Short Video Guide to Tbilisi',
-'description':'A short travel video featuring the sights and atmosphere of Tbilisi, Georgia.',
-'embedUrl':'https://www.youtube.com/embed/_nXz75uuLbI',
+'description':'A short travel film exploring Old Tbilisi, city landmarks and scenic views in Georgia’s capital.',
+'embedUrl':'https://www.youtube-nocookie.com/embed/_nXz75uuLbI',
 'url':'https://www.youtube.com/watch?v=_nXz75uuLbI',
  'thumbnailUrl':'https://i.ytimg.com/vi/_nXz75uuLbI/hqdefault.jpg'}
+# Google requires the *actual* first-publication date for VideoObject uploadDate.
+# Supply it explicitly once verified in YouTube Studio. Do not guess or use build time.
+youtube_upload_date=os.environ.get('YOUTUBE_UPLOAD_DATE','').strip()
+if youtube_upload_date:
+ from datetime import datetime
+ try:
+  parsed=datetime.fromisoformat(youtube_upload_date.replace('Z','+00:00'))
+  if parsed.tzinfo is None:raise ValueError('Timezone required')
+ except ValueError as exc:
+  raise RuntimeError('YOUTUBE_UPLOAD_DATE must be a verified ISO 8601 date-time with timezone') from exc
+ video_info['uploadDate']=youtube_upload_date
 js=soup.new_tag('script',attrs={'type':'application/ld+json'});js.string=json.dumps(video_info)
 soup.head.append(js)
 (DIST/'index.html').write_text('<!DOCTYPE html>\n'+str(soup.html)+'\n','utf-8')
