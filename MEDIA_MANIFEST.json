@@ -142,32 +142,32 @@
   {
     "index": 11,
     "filename": "Khinkali_-_Traditional_Georgian_food.jpg",
-    "title": "Khinkali plated as Georgian food editorial",
-    "author": "Nadin Sh",
+    "title": "Traditional Georgian khinkali dumplings",
+    "author": "Valeria Boltneva",
     "license": "Pexels License",
-    "source": "https://www.pexels.com/photo/close-up-photo-of-soup-dumpling-9435397/",
-    "img": "https://images.pexels.com/photos/9435397/pexels-photo-9435397.jpeg?auto=compress&cs=tinysrgb&w=2600",
+    "source": "https://www.pexels.com/photo/close-up-of-georgian-dumplings-7474078/",
+    "img": "https://images.pexels.com/photos/7474078/pexels-photo-7474078.jpeg?auto=compress&cs=tinysrgb&w=2600",
     "fallback_source": "https://commons.wikimedia.org/wiki/File:Khinkali_-_Traditional_Georgian_food.jpg",
     "fallback_img": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Khinkali_-_Traditional_Georgian_food.jpg/960px-Khinkali_-_Traditional_Georgian_food.jpg",
     "fallback_author": "Helen Owl",
     "fallback_license": "CC BY-SA 4.0",
     "provider": "pexels",
-    "photo_id": 9435397
+    "photo_id": 7474078
   },
   {
     "index": 12,
     "filename": "Georgian_traditional_kvevri_jugs_buried_in_a_winery_in_Kakheti.jpg",
-    "title": "Traditional large Georgian wine clay vessel outdoors",
-    "author": "Anna Romanova",
+    "title": "Traditional wine cellar with rows of bottles",
+    "author": "Julia Volk",
     "license": "Pexels License",
-    "source": "https://www.pexels.com/photo/large-wine-clay-pot-on-the-ground-outdoors-16112972/",
-    "img": "https://images.pexels.com/photos/16112972/pexels-photo-16112972.jpeg?auto=compress&cs=tinysrgb&w=2600",
+    "source": "https://www.pexels.com/photo/wooden-shelves-with-dusty-glass-bottles-of-wine-5272997/",
+    "img": "https://images.pexels.com/photos/5272997/pexels-photo-5272997.jpeg?auto=compress&cs=tinysrgb&w=2600",
     "fallback_source": "https://commons.wikimedia.org/wiki/File:Georgian_traditional_kvevri_jugs_buried_in_a_winery_in_Kakheti.jpg",
     "fallback_img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Georgian_traditional_kvevri_jugs_buried_in_a_winery_in_Kakheti.jpg/960px-Georgian_traditional_kvevri_jugs_buried_in_a_winery_in_Kakheti.jpg",
     "fallback_author": "hr.icio",
     "fallback_license": "CC BY 2.0",
     "provider": "pexels",
-    "photo_id": 16112972
+    "photo_id": 5272997
   },
   {
     "index": 13,

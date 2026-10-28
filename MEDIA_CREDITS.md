@@ -22,9 +22,9 @@ Existing Wikimedia photographs retain their Creative Commons licenses and the re
 - **9. Vintage cameras at Dry Bridge Market** — Alexkom000, CC BY 4.0: https://commons.wikimedia.org/wiki/File:2025-03-30_Old_cameras_at_the_Dry_Bridge_Market,_Tbilisi_1.jpg
 - **10. Mtatsminda hill and Tbilisi skyline at sunset** — dimitri simonishvili, Pexels License: https://www.pexels.com/photo/view-of-the-city-and-the-mtatsminda-park-in-the-background-at-sunset-in-tbilisi-georgia-16192927/
   - Fallback: Alexkom000, CC BY 4.0: https://commons.wikimedia.org/wiki/File:2025-03-29_View_of_Tbilisi_from_Mtatsminda.jpg
-- **11. Khinkali plated as Georgian food editorial** — Nadin Sh, Pexels License: https://www.pexels.com/photo/close-up-photo-of-soup-dumpling-9435397/
+- **11. Khinkali plated as Georgian food editorial** — Valeria Boltneva, Pexels License: https://www.pexels.com/photo/close-up-photo-of-soup-dumpling-7474078/
   - Fallback: Helen Owl, CC BY-SA 4.0: https://commons.wikimedia.org/wiki/File:Khinkali_-_Traditional_Georgian_food.jpg
-- **12. Traditional large Georgian wine clay vessel outdoors** — Anna Romanova, Pexels License: https://www.pexels.com/photo/large-wine-clay-pot-on-the-ground-outdoors-16112972/
+- **12. Traditional large Georgian wine clay vessel outdoors** — Julia Volk, Pexels License: https://www.pexels.com/photo/wooden-shelves-with-dusty-glass-bottles-of-wine-5272997/
   - Fallback: hr.icio, CC BY 2.0: https://commons.wikimedia.org/wiki/File:Georgian_traditional_kvevri_jugs_buried_in_a_winery_in_Kakheti.jpg
 - **13. Sunset over Old Tbilisi and Narikala fortress** — ArtHouse Studio, Pexels License: https://www.pexels.com/photo/view-of-a-town-4638268/
   - Fallback: Vyacheslav Argenberg, CC BY 4.0: https://commons.wikimedia.org/wiki/File:Tbilisi_at_night,_Kura,_Georgia.jpg
