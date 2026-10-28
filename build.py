@@ -150,6 +150,13 @@ print('Rendered',final,final.stat().st_size,'bytes',flush=True)
 repo=os.environ.get('GITHUB_REPOSITORY','example/top-things-to-do-in-tbilisi')
 owner,repo_name=repo.split('/',1)
 site=f'https://{owner}.github.io/{repo_name}/'
+if soup.html is None:
+ raise ValueError('index.html is invalid: missing <html> element')
+if soup.head is None:
+ # Guard against a malformed editor paste; normal builds keep original head.
+ head=soup.new_tag('head')
+ soup.html.insert(0,head)
+ print('WARNING: index.html had no <head>; added one for generated metadata',flush=True)
 meta=soup.new_tag('link',rel='canonical',href=site)
 soup.head.append(meta)
 for prop,content in [('og:url',site),('og:image',site+'assets/tbilisi-poster.webp')]:
